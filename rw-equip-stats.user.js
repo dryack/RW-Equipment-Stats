@@ -14,6 +14,7 @@
 
 const settings = {
     tornApiKey: '',
+    ttl: 30, // TTL for cached data, in minutes
 };
 
 function setObject(key, value) {
@@ -219,7 +220,7 @@ async function logData(armoryID, apiData) {
     if ('epoch' in apiData[armoryID]) {
       const now = Math.floor(new Date().getTime()/1000.0);
       //30 min ttl
-      if (now - apiData[armoryID].epoch <= 1800) {
+      if (now - apiData[armoryID].epoch <= (settings.ttl * 60)) {
         return Promise.resolve();
       }
     };
