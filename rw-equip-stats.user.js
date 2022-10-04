@@ -10,6 +10,8 @@
 // @grant       unsafeWindow
 // ==/UserScript==
 
+// UI modification came from sportsp, without whom this script would still be languishing
+
 const settings = {
     tornApiKey: '',
 };
