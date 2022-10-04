@@ -3,7 +3,7 @@
 // @namespace   lamashtu.rw_equipment_stats
 // @match       https://www.torn.com/item.php
 // @match       https://www.torn.com/factions.php?step=your#/tab=armoury
-// @updateURL   https://github.com/dryack/RW-Equipment-Stats/rw-equp-stats.user.js
+// @updateURL   https://github.com/dryack/RW-Equipment-Stats/rw-equip-stats.user.js
 // @version     1.2
 // @author      lamashtu
 // @description Track EQ stats in Torn's UI
