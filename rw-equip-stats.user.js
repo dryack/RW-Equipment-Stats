@@ -5,7 +5,7 @@
 // @match       https://www.torn.com/factions.php?step=your#/tab=armoury*
 // @downloadURL https://github.com/dryack/RW-Equipment-Stats/blob/main/rw-equip-stats.user.js
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/blob/main/rw-equip-stats.user.js
-// @version     1.3.2
+// @version     1.3.5
 // @author      lamashtu
 // @description Track RQ equipment stats in Torn's UI
 // @grant       unsafeWindow
@@ -32,7 +32,8 @@
 const settings = {
     tornApiKey: '',
     ttl: 30, // TTL for cached data, in minutes
-    apiComment: 'TornRWEqStats'
+    apiComment: 'TornRWEqStats',
+    collectMundane: false // pull information on non-RW items?
 };
 
 function setObject(key, value) {
@@ -42,6 +43,17 @@ function setObject(key, value) {
 function getObject(key) {
     let value = localStorage.getItem(key);
     return value && JSON.parse(value);
+}
+
+// populating the Extras array in the UI
+function appendExtra(title, value, obj, objType = "text") {
+  if (value > 0) {
+    obj['extras'].push({
+      type: objType,
+      title: title,
+      value: value.toString(), // TODO: is toString() simply unnecessary? indications point to yes
+    })
+  }
 }
 
 (async function() {
@@ -61,7 +73,7 @@ function getObject(key) {
     //debugger;
 
     // having to use a massive if/else here blows, but trying to dump out of the function with a guard statement was failing so w/e
-    if (obj.glow === "") { // not a RW item
+    if (obj.glow === "" && !settings.collectMundane) { // not a RW item
       callback(JSON.stringify(obj));
     } else {
       const armoryID = obj['armoryID'].toString();
@@ -136,28 +148,11 @@ function getObject(key) {
           apiData = getObject('apiData');
         }
 
-
-        // testing
-        if (apiData[armoryID].full_body_coverage) {
-          obj['extras'].push({
-            type: "text",
-            title: "Total Body Coverage",
-            value: apiData[armoryID].full_body_coverage.toString(),
-          });
-        }
-
-
-        obj['extras'].push({
-          type: "text",
-          title: "WeaponID",
-          value: armoryID,
-        });
-
-        obj['extras'].push({
-          type: "text",
-          title: "FirstOwner",
-          value: apiData[armoryID].first_owner.toString(),
-        });
+        // populating of the Extra array of objects is done without a loop to allow control of the order each item will
+        // be displayed
+        appendExtra("Full Body Coverage", apiData[armoryID].full_body_coverage, obj)  // TODO: consider pre-creating all fields as undefined, simplifying appendExtra()
+        appendExtra("ArmoryID", armoryID, obj)
+        appendExtra("First Owner", apiData[armoryID].first_owner, obj)
 
         if (apiData[armoryID].time_created > 0) {
           let epochInMS = apiData[armoryID].time_created * 1000
@@ -176,132 +171,20 @@ function getObject(key) {
           });
         }
 
-
-        if (apiData[armoryID].respect_earned > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Respect Earned",
-            value: apiData[armoryID].respect_earned.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].highest_damage > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Highest Damage",
-            value: apiData[armoryID].highest_damage.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].total_dmg > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Damage",
-            value: apiData[armoryID].total_dmg.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].rounds_fired > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Rds Fired",
-            value: apiData[armoryID].rounds_fired.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].hits > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Hits",
-            value: apiData[armoryID].hits.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].misses > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Misses",
-            value: apiData[armoryID].misses.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].reloads > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Reloads",
-            value: apiData[armoryID].reloads.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].finishing_hits > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Finishing",
-            value: apiData[armoryID].finishing_hits.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].critical_hits > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Crits",
-            value: apiData[armoryID].critical_hits.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].damage_taken > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Dmg Taken",
-            value: apiData[armoryID].damage_taken.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].hits_received > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Hits Recv'd",
-            value: apiData[armoryID].hits_received.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].most_damage_taken > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Max Dmg Taken",
-            value: apiData[armoryID].most_damage_taken.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].damage_mitigated > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Dmg Mitigated",
-            value: apiData[armoryID].damage_mitigated.toString(),
-          });
-        }
-
-
-        if (apiData[armoryID].most_damage_mitigated > 0) {
-          obj['extras'].push({
-            type: "text",
-            title: "Max Mitigated",
-            value: apiData[armoryID].most_damage_mitigated.toString(),
-          });
-        }
-
+        appendExtra("Respect Earned", apiData[armoryID].respect_earned, obj)
+        appendExtra("Highest Damage", apiData[armoryID].highest_damage, obj)
+        appendExtra("Damage", apiData[armoryID].total_dmg, obj)
+        appendExtra("Rds Fired", apiData[armoryID].rounds_fired, obj)
+        appendExtra("Hits", apiData[armoryID].hits, obj)
+        appendExtra("Misses", apiData[armoryID].misses, obj)
+        appendExtra("Reloads", apiData[armoryID].reloads, obj)
+        appendExtra("Finishing", apiData[armoryID].finishing_hits, obj)
+        appendExtra("Crits", apiData[armoryID].critical_hits, obj)
+        appendExtra("Dmg Taken", apiData[armoryID].damage_taken, obj)
+        appendExtra("Hits Recv'd", apiData[armoryID].hits_received, obj)
+        appendExtra("Max Dmg Taken", apiData[armoryID].most_damage_taken, obj)
+        appendExtra("Dmg Mitigated", apiData[armoryID].damage_mitigated, obj)
+        appendExtra("Max Mitigated", apiData[armoryID].most_damage_mitigated, obj)
 
         callback(JSON.stringify(obj));
       });
