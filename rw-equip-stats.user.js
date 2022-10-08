@@ -3,9 +3,10 @@
 // @namespace   lamashtu.rw_equipment_stats
 // @match       https://www.torn.com/item.php
 // @match       https://www.torn.com/factions.php?step=your#/tab=armoury*
+// @match       https://www.torn.com/displaycase.php*
 // @downloadURL https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
-// @version     1.3.5
+// @version     1.3.6
 // @author      lamashtu
 // @description Track RQ equipment stats in Torn's UI
 // @grant       unsafeWindow
@@ -62,10 +63,10 @@ function appendExtra(title, value, obj, objType = "text") {
   $.ajax = (...args) => {
     // sometimes args[0] is an url because jquery sucks, torn doesn't use this though
     // when there's no armouryID, we also want to pass through
-
     if (typeof args[0] === "string" || !args[0].url.includes("inventory.php") || args[0].data.armouryID === undefined) {
         return oldAjax(...args); // pass through
   }
+
   const callback = args[0].success || function () {}; // or empty function
   args[0].success = (data) => {
     //console.log(args[0])
@@ -73,24 +74,25 @@ function appendExtra(title, value, obj, objType = "text") {
     //debugger;
 
     // having to use a massive if/else here blows, but trying to dump out of the function with a guard statement was failing so w/e
+    const armoryID = obj['armoryID'].toString();
     if (obj.glow === "" && !settings.collectMundane) { // not a RW item
-      callback(JSON.stringify(obj));
+        callback(JSON.stringify(obj));
+    } else if (armoryID === "false") {
+        (armoryID === "false")
     } else {
-      const armoryID = obj['armoryID'].toString();
+        if (getObject('apiData') === null) {
+            let apiData = {};
+            setObject('apiData', apiData);
+        }
+        let apiData = getObject('apiData');
 
-      if (getObject('apiData') === null) {
-        let apiData = {};
-        setObject('apiData', apiData);
-      }
-      let apiData = getObject('apiData');
+        if (!(armoryID in apiData)) {
+            apiData[armoryID] = {};
+        }
 
-      if (!(armoryID in apiData)) {
-        apiData[armoryID] = {};
-      }
-
-      // collect non-api data, including the obnoxious hovertext-only stuff
-      for (const itemInfo of obj.extras) {
+        // collect non-api data, including the obnoxious hovertext-only stuff
         let numBonuses = 0;
+        for (const itemInfo of obj.extras) {
         switch (itemInfo.title) {
           case "Damage":
             apiData[armoryID]['damage'] = parseFloat(itemInfo.value);
