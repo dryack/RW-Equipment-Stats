@@ -3,6 +3,7 @@
 // @namespace   lamashtu.rw_equipment_stats
 // @match       https://www.torn.com/item.php
 // @match       https://www.torn.com/factions.php?step=your#/tab=armoury*
+// @downloadURL https://github.com/dryack/RW-Equipment-Stats/blob/main/rw-equip-stats.user.js
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/blob/main/rw-equip-stats.user.js
 // @version     1.3.2
 // @author      lamashtu
