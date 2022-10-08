@@ -4,7 +4,7 @@
 // @match       https://www.torn.com/item.php
 // @match       https://www.torn.com/factions.php?step=your#/tab=armoury*
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/blob/main/rw-equip-stats.user.js
-// @version     1.21
+// @version     1.3
 // @author      lamashtu
 // @description Track RQ equipment stats in Torn's UI
 // @grant       unsafeWindow
@@ -117,12 +117,15 @@ function getObject(key) {
           setObject('apiData', apiData);
         }
 
+
         // testing
-        obj['extras'].push({
-          type: "text",
-          title: "Total Body Coverage",
-          value: apiData[armoryID].full_body_coverage.toString(),
-        });
+        if (apiData[armoryID].full_body_coverage) {
+          obj['extras'].push({
+            type: "text",
+            title: "Total Body Coverage",
+            value: apiData[armoryID].full_body_coverage.toString(),
+          });
+        };
 
         obj['extras'].push({
           type: "text",
