@@ -13,7 +13,7 @@
 // UI modification came from sportsp, without whom this script would still be languishing
 
 const settings = {
-    tornApiKey: 'J8WN7xMx4ePHnX0H',
+    tornApiKey: '',
     ttl: 30, // TTL for cached data, in minutes
     apiComment: 'TornRWEqStats'
 };
@@ -28,7 +28,6 @@ function getObject(key) {
 };
 
 (async function() {
-// document.querySelector("#armour-items > li.bg-green.h.m-first-in-row.t-last-in-row.tt-overlay-ignore.item-info-active > div.thumbnail-wrap > div")
 
  const oldAjax = $.ajax; // proxy
   $.ajax = (...args) => {
@@ -42,6 +41,7 @@ function getObject(key) {
   args[0].success = (data) => {
     //console.log(args[0])
     let obj = JSON.parse(data);
+    //debugger;
 
     // having to use a massive if/else here blows, but trying to dump out of the function with a guard statement was failing so w/e
     if (!(obj.glow == "")) {
@@ -56,6 +56,42 @@ function getObject(key) {
       if (!(armoryID in apiData)) {
         apiData[armoryID] = {};
       };
+
+      // collect non-api data, including the obnoxious hovertext-only stuff
+      for (const itemInfo of obj.extras) {
+        let numBonuses = 0;
+        switch(itemInfo.title) {
+          case "Damage":
+            apiData[armoryID]['damage'] = parseFloat(itemInfo.value);
+            break;
+          case "Accuracy":
+            apiData[armoryID]['accuracy'] = parseFloat(itemInfo.value);
+            break;
+          case "Stealth":
+            apiData[armoryID]['stealth'] = parseFloat(itemInfo.value);
+            break;
+          case "Quality":
+            apiData[armoryID]['quality'] = parseFloat(itemInfo.value.replace("%",""));
+            apiData[armoryID]['color'] = itemInfo.colorOverlay;
+            break;
+          case "Bonus":
+            numBonuses += 1;
+            apiData[armoryID]["bonus"+numBonuses] = itemInfo.value;
+            apiData[armoryID]["bonus_quality"+numBonuses] = itemInfo.descTitle;
+            break;
+          case "Armor":
+            apiData[armoryID]['armor'] = parseFloat(itemInfo.value);
+            break;
+          case "Coverage":
+            let coverages = itemInfo.descTitle.split("<b>");
+            coverages.shift();
+            for (const location of coverages) {
+              let splitStr = location.split(":");
+              const locationName = splitStr[0].toLowerCase().replace(/ /g, "_");
+              apiData[armoryID][locationName] = parseFloat(splitStr[1].replace("%","").replace("</b>","").replace("</br>","").trim());
+            }
+        }
+      }
 
       logData(armoryID, apiData).then(response => {
         if (response === undefined) {
@@ -81,7 +117,13 @@ function getObject(key) {
           setObject('apiData', apiData);
         }
 
-        //debugger;
+        // testing
+        obj['extras'].push({
+          type: "text",
+          title: "Total Body Coverage",
+          value: apiData[armoryID].full_body_coverage.toString(),
+        });
+
         obj['extras'].push({
           type: "text",
           title: "WeaponID",
