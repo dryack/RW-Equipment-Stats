@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Torn RW Equipment Stats
 // @namespace   lamashtu.rw_equipment_stats
-// @match       https://www.torn.com/item.php
+// @match       https://www.torn.com/item.php*
 // @match       https://www.torn.com/factions.php?step=your#/tab=armoury*
 // @match       https://www.torn.com/displaycase.php*
 // @downloadURL https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
@@ -34,7 +34,8 @@ const settings = {
     tornApiKey: '',
     ttl: 30, // TTL for cached data, in minutes
     apiComment: 'TornRWEqStats',
-    collectMundane: false // pull information on non-RW items?
+    collectMundane: false, // pull information on non-RW items?
+    breakoutArmorCoverages: true, // display individual body part coverages?
 };
 
 function setObject(key, value) {
@@ -48,7 +49,7 @@ function getObject(key) {
 
 // populating the Extras array in the UI
 function appendExtra(title, value, obj, objType = "text") {
-  if (value > 0) {
+  if (value > 0 && value !== undefined) {
     obj['extras'].push({
       type: objType,
       title: title,
@@ -152,10 +153,22 @@ function appendExtra(title, value, obj, objType = "text") {
 
         // populating of the Extra array of objects is done without a loop to allow control of the order each item will
         // be displayed
-        appendExtra("Full Body Coverage", apiData[armoryID].full_body_coverage, obj)  // TODO: consider pre-creating all fields as undefined, simplifying appendExtra()
+        if (breakoutArmorCoverages) {
+            appendExtra("Full Body Coverage", apiData[armoryID].full_body_coverage, obj)  // TODO: consider pre-creating all fields as undefined, simplifying appendExtra()
+            appendExtra("Groin Coverage", apiData[armoryID].groin_coverage, obj)
+            appendExtra("Leg Coverage", apiData[armoryID].leg_coverage, obj)
+            appendExtra("Foot Coverage", apiData[armoryID].foot_coverage, obj)
+            appendExtra("Stomach Coverage", apiData[armoryID].stomach_coverage, obj)
+            appendExtra("Arm Coverage", apiData[armoryID].arm_coverage, obj)
+            appendExtra("Heart Coverage", apiData[armoryID].heart_coverage, obj)
+            appendExtra("Chest Coverage", apiData[armoryID].chest_coverage, obj)
+            appendExtra("Throat Coverage", apiData[armoryID].throat_coverage, obj)
+            appendExtra("Hand Coverage", apiData[armoryID].hand_coverage, obj)
+            appendExtra("Head Coverage", apiData[armoryID].head_coverage, obj)
+        }
+
         appendExtra("ArmoryID", armoryID, obj)
         appendExtra("First Owner", apiData[armoryID].first_owner, obj)
-
         if (apiData[armoryID].time_created > 0) {
           let epochInMS = apiData[armoryID].time_created * 1000
           let createDate = new Date(epochInMS).toLocaleString([], {
