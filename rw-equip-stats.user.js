@@ -6,7 +6,7 @@
 // @match       https://www.torn.com/displaycase.php*
 // @downloadURL https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
-// @version     1.3.8
+// @version     1.3.9
 // @author      lamashtu
 // @description Track RQ equipment stats in Torn's UI
 // @grant       unsafeWindow
@@ -49,7 +49,7 @@ function getObject(key) {
 
 // populating the Extras array in the UI
 function appendExtra(title, value, obj, objType = "text") {
-  if (value > 0 && settings.value !== undefined) {
+  if (value > 0 && value !== undefined) {
     obj['extras'].push({
       type: objType,
       title: title,
@@ -127,82 +127,83 @@ function appendExtra(title, value, obj, objType = "text") {
         }
       }
 
-      logData(armoryID, apiData).then(response => {
-        if (response !== undefined) {
-          apiData[armoryID]['epoch'] = Math.floor(new Date().getTime() / 1000.0)
-          apiData[armoryID]['first_owner'] = response.itemstats.stats.first_owner || 0
-          apiData[armoryID]['respect_earned'] = response.itemstats.stats.respect_earned || 0
-          apiData[armoryID]['highest_damage'] = response.itemstats.stats.highest_damage || 0
-          apiData[armoryID]['time_created'] = response.itemstats.stats.time_created || 0
-          apiData[armoryID]['total_dmg'] = response.itemstats.stats.damage || 0
-          apiData[armoryID]['rounds_fired'] = response.itemstats.stats.rounds_fired || 0
-          apiData[armoryID]['hits'] = response.itemstats.stats.hits || 0
-          apiData[armoryID]['misses'] = response.itemstats.stats.misses || 0
-          apiData[armoryID]['reloads'] = response.itemstats.stats.reloads || 0
-          apiData[armoryID]['finishing_hits'] = response.itemstats.stats.finishing_hits || 0
-          apiData[armoryID]['critical_hits'] = response.itemstats.stats.critical_hits || 0
-          apiData[armoryID]['damage_taken'] = response.itemstats.stats.damage_taken || 0
-          apiData[armoryID]['hits_received'] = response.itemstats.stats.hits_received || 0
-          apiData[armoryID]['most_damage_taken'] = response.itemstats.stats.most_damage_taken || 0
-          apiData[armoryID]['damage_mitigated'] = response.itemstats.stats.damage_mitigated || 0
-          apiData[armoryID]['most_damage_mitigated'] = response.itemstats.stats.most_damage_mitigated || 0
-          setObject('apiData', apiData);
-        } else {
-          apiData = getObject('apiData');
-        }
+        // TODO: consider pre-creating all fields as undefined, simplifying appendExtra()
+        logData(armoryID, apiData).then(response => {
+            if (response !== undefined) {
+              apiData[armoryID]['epoch'] = Math.floor(new Date().getTime() / 1000.0)
+              apiData[armoryID]['first_owner'] = response.itemstats.stats.first_owner || 0
+              apiData[armoryID]['respect_earned'] = response.itemstats.stats.respect_earned || 0
+              apiData[armoryID]['highest_damage'] = response.itemstats.stats.highest_damage || 0
+              apiData[armoryID]['time_created'] = response.itemstats.stats.time_created || 0
+              apiData[armoryID]['total_dmg'] = response.itemstats.stats.damage || 0
+              apiData[armoryID]['rounds_fired'] = response.itemstats.stats.rounds_fired || 0
+              apiData[armoryID]['hits'] = response.itemstats.stats.hits || 0
+              apiData[armoryID]['misses'] = response.itemstats.stats.misses || 0
+              apiData[armoryID]['reloads'] = response.itemstats.stats.reloads || 0
+              apiData[armoryID]['finishing_hits'] = response.itemstats.stats.finishing_hits || 0
+              apiData[armoryID]['critical_hits'] = response.itemstats.stats.critical_hits || 0
+              apiData[armoryID]['damage_taken'] = response.itemstats.stats.damage_taken || 0
+              apiData[armoryID]['hits_received'] = response.itemstats.stats.hits_received || 0
+              apiData[armoryID]['most_damage_taken'] = response.itemstats.stats.most_damage_taken || 0
+              apiData[armoryID]['damage_mitigated'] = response.itemstats.stats.damage_mitigated || 0
+              apiData[armoryID]['most_damage_mitigated'] = response.itemstats.stats.most_damage_mitigated || 0
+              setObject('apiData', apiData);
+            } else {
+              apiData = getObject('apiData');
+            }
 
-        // populating of the Extra array of objects is done without a loop to allow control of the order each item will
-        // be displayed
-        if (breakoutArmorCoverages) {
-            appendExtra("Full Body Coverage", apiData[armoryID].full_body_coverage, obj)  // TODO: consider pre-creating all fields as undefined, simplifying appendExtra()
-            appendExtra("Groin Coverage", apiData[armoryID].groin_coverage, obj)
-            appendExtra("Leg Coverage", apiData[armoryID].leg_coverage, obj)
-            appendExtra("Foot Coverage", apiData[armoryID].foot_coverage, obj)
-            appendExtra("Stomach Coverage", apiData[armoryID].stomach_coverage, obj)
-            appendExtra("Arm Coverage", apiData[armoryID].arm_coverage, obj)
-            appendExtra("Heart Coverage", apiData[armoryID].heart_coverage, obj)
-            appendExtra("Chest Coverage", apiData[armoryID].chest_coverage, obj)
-            appendExtra("Throat Coverage", apiData[armoryID].throat_coverage, obj)
-            appendExtra("Hand Coverage", apiData[armoryID].hand_coverage, obj)
-            appendExtra("Head Coverage", apiData[armoryID].head_coverage, obj)
-        }
+            // populating of the Extra array of objects is done without a loop to allow control of the order each item will
+            // be displayed
+            if (settings.breakoutArmorCoverages) {
+                appendExtra("Full Body Coverage", apiData[armoryID].full_body_coverage, obj)
+                appendExtra("Groin Coverage", apiData[armoryID].groin_coverage, obj)
+                appendExtra("Leg Coverage", apiData[armoryID].leg_coverage, obj)
+                appendExtra("Foot Coverage", apiData[armoryID].foot_coverage, obj)
+                appendExtra("Stomach Coverage", apiData[armoryID].stomach_coverage, obj)
+                appendExtra("Arm Coverage", apiData[armoryID].arm_coverage, obj)
+                appendExtra("Heart Coverage", apiData[armoryID].heart_coverage, obj)
+                appendExtra("Chest Coverage", apiData[armoryID].chest_coverage, obj)
+                appendExtra("Throat Coverage", apiData[armoryID].throat_coverage, obj)
+                appendExtra("Hand Coverage", apiData[armoryID].hand_coverage, obj)
+                appendExtra("Head Coverage", apiData[armoryID].head_coverage, obj)
+            }
 
-        appendExtra("ArmoryID", armoryID, obj)
-        appendExtra("First Owner", apiData[armoryID].first_owner, obj)
-        if (apiData[armoryID].time_created > 0) {
-          let epochInMS = apiData[armoryID].time_created * 1000
-          let createDate = new Date(epochInMS).toLocaleString([], {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
+            appendExtra("ArmoryID", armoryID, obj)
+            appendExtra("First Owner", apiData[armoryID].first_owner, obj)
+            if (apiData[armoryID].time_created > 0) {
+              let epochInMS = apiData[armoryID].time_created * 1000
+              let createDate = new Date(epochInMS).toLocaleString([], {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              });
+              obj['extras'].push({
+                type: "text",
+                title: "Created",
+                value: createDate.toString()
+              });
+            }
+
+            appendExtra("Respect Earned", apiData[armoryID].respect_earned, obj)
+            appendExtra("Highest Damage", apiData[armoryID].highest_damage, obj)
+            appendExtra("Damage", apiData[armoryID].total_dmg, obj)
+            appendExtra("Rds Fired", apiData[armoryID].rounds_fired, obj)
+            appendExtra("Hits", apiData[armoryID].hits, obj)
+            appendExtra("Misses", apiData[armoryID].misses, obj)
+            appendExtra("Reloads", apiData[armoryID].reloads, obj)
+            appendExtra("Finishing", apiData[armoryID].finishing_hits, obj)
+            appendExtra("Crits", apiData[armoryID].critical_hits, obj)
+            appendExtra("Dmg Taken", apiData[armoryID].damage_taken, obj)
+            appendExtra("Hits Recv'd", apiData[armoryID].hits_received, obj)
+            appendExtra("Max Dmg Taken", apiData[armoryID].most_damage_taken, obj)
+            appendExtra("Dmg Mitigated", apiData[armoryID].damage_mitigated, obj)
+            appendExtra("Max Mitigated", apiData[armoryID].most_damage_mitigated, obj)
+
+            callback(JSON.stringify(obj));
           });
-          obj['extras'].push({
-            type: "text",
-            title: "Created",
-            value: createDate.toString()
-          });
-        }
-
-        appendExtra("Respect Earned", apiData[armoryID].respect_earned, obj)
-        appendExtra("Highest Damage", apiData[armoryID].highest_damage, obj)
-        appendExtra("Damage", apiData[armoryID].total_dmg, obj)
-        appendExtra("Rds Fired", apiData[armoryID].rounds_fired, obj)
-        appendExtra("Hits", apiData[armoryID].hits, obj)
-        appendExtra("Misses", apiData[armoryID].misses, obj)
-        appendExtra("Reloads", apiData[armoryID].reloads, obj)
-        appendExtra("Finishing", apiData[armoryID].finishing_hits, obj)
-        appendExtra("Crits", apiData[armoryID].critical_hits, obj)
-        appendExtra("Dmg Taken", apiData[armoryID].damage_taken, obj)
-        appendExtra("Hits Recv'd", apiData[armoryID].hits_received, obj)
-        appendExtra("Max Dmg Taken", apiData[armoryID].most_damage_taken, obj)
-        appendExtra("Dmg Mitigated", apiData[armoryID].damage_mitigated, obj)
-        appendExtra("Max Mitigated", apiData[armoryID].most_damage_mitigated, obj)
-
-        callback(JSON.stringify(obj));
-      });
     }
   };
   return oldAjax(...args);
