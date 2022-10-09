@@ -6,7 +6,7 @@
 // @match       https://www.torn.com/displaycase.php*
 // @downloadURL https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
-// @version     1.3.7
+// @version     1.3.8
 // @author      lamashtu
 // @description Track RQ equipment stats in Torn's UI
 // @grant       unsafeWindow
