@@ -49,7 +49,7 @@ function getObject(key) {
 
 // populating the Extras array in the UI
 function appendExtra(title, value, obj, objType = "text") {
-  if (value > 0 && value !== undefined) {
+  if (value > 0 && settings.value !== undefined) {
     obj['extras'].push({
       type: objType,
       title: title,
