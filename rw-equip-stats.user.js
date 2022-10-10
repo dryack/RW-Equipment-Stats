@@ -79,7 +79,7 @@ function appendExtra(title, value, obj, objType = "text") {
     if (obj.glow === "" && !settings.collectMundane) { // not a RW item
         callback(JSON.stringify(obj));
     } else if (armoryID === "false") {
-        (armoryID === "false")
+        callback(JSON.stringify(obj));
     } else {
         if (getObject('apiData') === null) {
             let apiData = {};
