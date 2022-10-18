@@ -2,11 +2,11 @@
 // @name        Torn RW Equipment Stats
 // @namespace   lamashtu.rw_equipment_stats
 // @match       https://www.torn.com/item.php*
-// @match       https://www.torn.com/factions.php?step=your#/tab=armoury*
+// @match       https://www.torn.com/factions.php?step=your*/tab=armoury*
 // @match       https://www.torn.com/displaycase.php*
 // @downloadURL https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
 // @updateURL   https://github.com/dryack/RW-Equipment-Stats/raw/main/rw-equip-stats.user.js
-// @version     1.3.10
+// @version     1.3.11
 // @author      lamashtu
 // @description Track RQ equipment stats in Torn's UI
 // @grant       unsafeWindow
